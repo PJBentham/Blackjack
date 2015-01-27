@@ -40,7 +40,7 @@ class Game():
 		if no_of_players>0:	
 			return no_of_players	
 		else:
-			self.number_of_players()	
+			return self.number_of_players()	
 
 	def create_players(self, no_of_players, deck):
 		players=[]
