@@ -20,16 +20,18 @@ class Deck():
 class Player():
 	def __init__(self, deck):
 		self.deck = deck
+		self.cards = []
 
 	def get_card(self):
 		while len(self.deck)>0:
 			hand = self.deck.pop(0)
-			return hand
+			return self.cards.append(hand)
 		else:
 			return "Sorry no more cards remain in the pack!"
 
 class Dealer(Player):	
-	pass
+	def show_first_card():
+		return cards[0]
 
 class Game():
 	def number_of_players(self):
@@ -50,8 +52,42 @@ class Game():
 		return players, dealer
 
 	def create_dealer(self, deck):
-		return Dealer(deck)		
+		return Dealer(deck)	
+
+	def deal_cards(self, players, dealer):
+		dealer.get_card()
+		for i in range(0, len(players)):
+			players[i].get_card()
+			players[i].get_card()
+
+	def get_players_cards(self, player):
+		return player.cards		
 		
+	def get_cards_score(self, cards):
+		values = {
+		'Ace': 10,
+		'King': 10,
+		'Queen': 10,
+		'Jack': 10,
+		}
+		card_values = 0
+
+		for card in range(0, len(cards)):
+			#Need to put an if statement in here to see if
+			#player wants to use Ace as High or Low...
+			if isinstance(cards[card][1], int): 
+				card_values += cards[card][1]
+			else:
+ 				card_values += values[cards[card][1]]		
+		return card_values
+
+	def show_players_cards(self, players, dealer):
+		for player in range(0, len(players)):
+			print "Player {}'s cards: {}, Score is: {}".format(	(player+1), 
+																self.get_players_cards(players[player]), 
+																self.get_cards_score(self.get_players_cards(players[player])))
+		print "Dealers card: {}, Score is: {}".format(	self.get_players_cards(dealer),
+														self.get_cards_score(self.get_players_cards(dealer)))
 
 if __name__ == "__main__":
 	# Create a deck instance
@@ -75,11 +111,8 @@ if __name__ == "__main__":
 	players, dealer = game.create_players(no_of_players, shuffled_deck)
 
 	#Get a card for each player in the game and print
-	for i in range(0, len(players)):
-		print players[i].get_card()
-	print dealer.get_card()	
-	# for i in range(0, 13):
-	# 	print dealer.get_card()
-	# 	print player.get_card()
+	game.deal_cards(players, dealer)
 
-	# print shuffled_deck
+	#Print players cards and dealers card
+	game.show_players_cards(players, dealer)
+	
