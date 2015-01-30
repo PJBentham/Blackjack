@@ -21,6 +21,7 @@ class Player():
 	def __init__(self, deck):
 		self.deck = deck
 		self.cards = []
+		self.score = 0
 
 	def get_card(self):
 		while len(self.deck)>0:
@@ -63,9 +64,9 @@ class Game():
 	def get_players_cards(self, player):
 		return player.cards		
 		
-	def get_cards_score(self, cards):
+	def get_cards_score(self, cards, player, player_number="[Dealer]", isdealer=False):
 		values = {
-		'Ace': 10,
+		'Ace': 11,
 		'King': 10,
 		'Queen': 10,
 		'Jack': 10,
@@ -77,17 +78,36 @@ class Game():
 			#player wants to use Ace as High or Low...
 			if isinstance(cards[card][1], int): 
 				card_values += cards[card][1]
-			else:
+			elif cards[card][1] == 'Ace':
+				if isdealer == True:
+					card_values = "1 or 11"
+				else:	
+					print 'Player {}, your cards are: {}'.format(player_number, cards)
+					high_or_low = raw_input('Do you want your Ace to be high[h] or low[l]?').lower()
+					if high_or_low == 'h':
+						card_values += 11
+					elif high_or_low == 'l':
+						card_values += 1
+					else:
+						return self.get_cards_score(self, cards)	
+			else:	
  				card_values += values[cards[card][1]]		
-		return card_values
+		player.score = card_values
+		return player.score
 
 	def show_players_cards(self, players, dealer):
 		for player in range(0, len(players)):
 			print "Player {}'s cards: {}, Score is: {}".format(	(player+1), 
 																self.get_players_cards(players[player]), 
-																self.get_cards_score(self.get_players_cards(players[player])))
+																self.get_cards_score(
+																	self.get_players_cards(players[player]), 
+																	players[player],
+																	(player+1)))
 		print "Dealers card: {}, Score is: {}".format(	self.get_players_cards(dealer),
-														self.get_cards_score(self.get_players_cards(dealer)))
+														self.get_cards_score(
+															self.get_players_cards(dealer), 
+															players[player], 
+															isdealer=True))
 
 if __name__ == "__main__":
 	# Create a deck instance
@@ -115,4 +135,3 @@ if __name__ == "__main__":
 
 	#Print players cards and dealers card
 	game.show_players_cards(players, dealer)
-	
