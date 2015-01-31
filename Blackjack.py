@@ -30,9 +30,21 @@ class Player():
 		else:
 			return "Sorry no more cards remain in the pack!"
 
+	def stick_or_twist(self):
+		valid_answer = False
+		while valid_answer == False:
+			choice = raw_input("Do you want to stick[s] or twist[t]?").lower() 		
+			if choice == 's':
+				print "You are sticking with a score of {}".format(self.score)
+				valid_answer = True
+			elif choice	== 't':
+				print "You have decided to twist."
+				self.get_card()
+
+				print "Your next card is: "+str(self.cards[-1])
+
 class Dealer(Player):	
-	def show_first_card():
-		return cards[0]
+	pass
 
 class Game():
 	def number_of_players(self):
@@ -64,6 +76,8 @@ class Game():
 	def get_players_cards(self, player):
 		return player.cards		
 		
+	##############################################################	
+	#I think the below function needs to be in the player class...	
 	def get_cards_score(self, cards, player, player_number="[Dealer]", isdealer=False):
 		values = {
 		'Ace': 11,
@@ -83,17 +97,21 @@ class Game():
 					card_values = "1 or 11"
 				else:	
 					print 'Player {}, your cards are: {}'.format(player_number, cards)
-					high_or_low = raw_input('Do you want your Ace to be high[h] or low[l]?').lower()
-					if high_or_low == 'h':
-						card_values += 11
-					elif high_or_low == 'l':
-						card_values += 1
-					else:
-						return self.get_cards_score(self, cards)	
+					valid_answer = False
+					while valid_answer == False:
+						high_or_low = raw_input('Do you want your Ace to be high[h] or low[l]?').lower()
+						if high_or_low == 'h':
+							card_values += 11
+							valid_answer = True
+						elif high_or_low == 'l':
+							card_values += 1
+							valid_answer = True
+
 			else:	
  				card_values += values[cards[card][1]]		
 		player.score = card_values
 		return player.score
+	###################################################################	
 
 	def show_players_cards(self, players, dealer):
 		for player in range(0, len(players)):
@@ -109,6 +127,8 @@ class Game():
 															players[player], 
 															isdealer=True))
 
+
+		
 if __name__ == "__main__":
 	# Create a deck instance
 	deck = Deck()
@@ -135,3 +155,5 @@ if __name__ == "__main__":
 
 	#Print players cards and dealers card
 	game.show_players_cards(players, dealer)
+
+	players[0].stick_or_twist()
