@@ -30,6 +30,40 @@ class Player():
 		else:
 			return "Sorry no more cards remain in the pack!"
 
+	##############################################################
+	def get_cards_score(self, player_number="[Dealer]", isdealer=False):
+		values = {
+		'Ace': 11,
+		'King': 10,
+		'Queen': 10,
+		'Jack': 10,
+		}
+		card_values = 0
+
+		for card in range(0, len(self.cards)):
+			if isinstance(self.cards[card][1], int): 
+				card_values += self.cards[card][1]
+			elif self.cards[card][1] == 'Ace':
+				if isdealer == True:
+					card_values = "1 or 11"
+				else:	
+					print 'Player {}, your cards are: {}'.format(player_number, self.cards)
+					valid_answer = False
+					while valid_answer == False:
+						high_or_low = raw_input('Do you want your Ace to be high[h] or low[l]?').lower()
+						if high_or_low == 'h':
+							card_values += 11
+							valid_answer = True
+						elif high_or_low == 'l':
+							card_values += 1
+							valid_answer = True
+
+			else:	
+ 				card_values += values[self.cards[card][1]]		
+		self.score = card_values
+		return self.score
+	###################################################################		
+
 	def stick_or_twist(self):
 		valid_answer = False
 		while valid_answer == False:
@@ -39,12 +73,31 @@ class Player():
 				valid_answer = True
 			elif choice	== 't':
 				print "You have decided to twist."
+				valid_answer = True
 				self.get_card()
-
 				print "Your next card is: "+str(self.cards[-1])
+				self.get_cards_score()
+				if self.score > 21:
+					print "You are bust"
+					break
+				elif self.score == 21:
+					print "You have Blackjack!"
+					break
+				else:
+					return self.stick_or_twist()
 
-class Dealer(Player):	
-	pass
+class Dealer(Player):
+	def stick_or_twist(self):
+		while self.score < 17:
+			print "Your score is below 17, you have to twist"
+			self.get_card()
+			self.get_cards_score()
+			print 'Your cards are: {} and your new score is {}'.format(self.cards, self.score)
+
+		if self.score > 21:
+			print "Dealer is bust, all remaining win"
+		elif self.score == 21:
+			print "Dealer has Blackjack"
 
 class Game():
 	def number_of_players(self):
@@ -74,59 +127,24 @@ class Game():
 			players[i].get_card()
 
 	def get_players_cards(self, player):
-		return player.cards		
-		
-	##############################################################	
-	#I think the below function needs to be in the player class...	
-	def get_cards_score(self, cards, player, player_number="[Dealer]", isdealer=False):
-		values = {
-		'Ace': 11,
-		'King': 10,
-		'Queen': 10,
-		'Jack': 10,
-		}
-		card_values = 0
-
-		for card in range(0, len(cards)):
-			#Need to put an if statement in here to see if
-			#player wants to use Ace as High or Low...
-			if isinstance(cards[card][1], int): 
-				card_values += cards[card][1]
-			elif cards[card][1] == 'Ace':
-				if isdealer == True:
-					card_values = "1 or 11"
-				else:	
-					print 'Player {}, your cards are: {}'.format(player_number, cards)
-					valid_answer = False
-					while valid_answer == False:
-						high_or_low = raw_input('Do you want your Ace to be high[h] or low[l]?').lower()
-						if high_or_low == 'h':
-							card_values += 11
-							valid_answer = True
-						elif high_or_low == 'l':
-							card_values += 1
-							valid_answer = True
-
-			else:	
- 				card_values += values[cards[card][1]]		
-		player.score = card_values
-		return player.score
-	###################################################################	
+		return player.cards			
 
 	def show_players_cards(self, players, dealer):
 		for player in range(0, len(players)):
 			print "Player {}'s cards: {}, Score is: {}".format(	(player+1), 
 																self.get_players_cards(players[player]), 
-																self.get_cards_score(
-																	self.get_players_cards(players[player]), 
-																	players[player],
-																	(player+1)))
+																players[player].get_cards_score(
+																	player+1))
 		print "Dealers card: {}, Score is: {}".format(	self.get_players_cards(dealer),
-														self.get_cards_score(
-															self.get_players_cards(dealer), 
-															players[player], 
+														dealer.get_cards_score(
 															isdealer=True))
 
+	def run_stick_or_twist(self, players, dealer):
+		for player in range(0, len(players)):
+			print "Player {}, your cards are {}".format(player+1, players[player].cards)
+			players[player].stick_or_twist()
+		print "Dealer, your cards are {}".format(dealer.cards)	
+		dealer.stick_or_twist()	
 
 		
 if __name__ == "__main__":
@@ -155,5 +173,9 @@ if __name__ == "__main__":
 
 	#Print players cards and dealers card
 	game.show_players_cards(players, dealer)
+	
+	#Ask the players if they want to stick or twist
+	game.run_stick_or_twist(players, dealer)
 
-	players[0].stick_or_twist()
+	#print players[0].get_cards_score()
+	#players[0].stick_or_twist()
